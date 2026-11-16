@@ -8595,9 +8595,10 @@ function tolkaHash(hStr){
   const p = new URLSearchParams(raw);
   const ucVal = (p.get('uc') || p.get('rond') || '').trim();
   if(ucVal){
-    const low = ucVal.toLowerCase();
-    const tr = allaUc().find(x => x.u.id.toLowerCase() === low || (x.u.name || '').trim().toLowerCase() === low);
-    if(tr){ rondOppna(tr.u.id); return true; }
+    const low = ucVal.toLowerCase(), norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '');
+    const lowN = norm(low.replace(/^u-ex-/, 'uc '));
+    const tr = allaUc().find(x => x.u.id.toLowerCase() === low || (x.u.name || '').trim().toLowerCase() === low || norm(x.u.name) === lowN);
+    if(tr){ rondOppna(tr.u.id); if(p.get('qr') === '1') qrDialog(tr.u.id); return true; }
   }
   const omrVal = (p.get('omr') || p.get('area') || '').trim();
   if(omrVal){
