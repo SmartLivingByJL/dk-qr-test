@@ -62,6 +62,47 @@ input,select{font:inherit;color:inherit}
 .lockbtn #lockIcon{font-size:15px;line-height:1}
 body.locked .lockbtn{background:rgba(255,255,255,.16)}
 body:not(.locked) .lockbtn{background:var(--fram);border-color:var(--fram)}
+.vylagebtn{display:flex;align-items:center;gap:6px;white-space:nowrap}
+body:not(.fastlage) .vylagebtn{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.55)}
+/* Fastighetsläge: neutrala kartmarkörer, inga röda larmringar/brickor eller kommunikationslarm. */
+body.fastlage .statuspill,
+body.fastlage #lgLarm,
+body.fastlage #bnLarm,
+body.fastlage #mlLarm,
+body.fastlage #tabLarm,
+body.fastlage #flags,
+body.fastlage .stchip.st-ingen,
+body.fastlage .stchip.st-pav,
+body.fastlage .stchip.st-hant{display:none !important}
+body.fastlage .mk.ok,body.fastlage .mk.lucka,body.fastlage .mk.ingen,body.fastlage .mk.tom{background:var(--retur);border-color:#fff;color:#fff}
+body.fastlage .omr-nr.ok,body.fastlage .omr-nr.lucka,body.fastlage .omr-nr.ingen,body.fastlage .omr-nr.tom{background:var(--retur);color:#fff}
+body.fastlage .adrm.s-kontakt,body.fastlage .adrm.s-lucka,body.fastlage .adrm.s-ingen,body.fastlage .adrm.s-ejmatt{border-color:var(--retur);color:var(--retur)}
+body.fastlage .lagm.s-kontakt,body.fastlage .lagm.s-lucka,body.fastlage .lagm.s-ingen,body.fastlage .lagm.s-ejmatt{border-color:var(--retur)}
+body.fastlage .lagm.omr{background:var(--retur);border-color:#fff}
+body.fastlage .mpi.larm,body.fastlage .mpi.pav{box-shadow:none}
+body.fastlage .sdot.s-ingen,body.fastlage .sdot.s-lucka,body.fastlage .sdot.s-kontakt,body.fastlage .sdot.s-ejmatt,body.fastlage .sdot.s-ejkontroll{background:var(--retur)}
+.fp-sec{margin-top:9px;padding-top:8px;border-top:1px solid var(--rule-soft)}
+.fp-h{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:5px}
+.fp-uc{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--rule-soft)}
+.fp-uc:last-child{border-bottom:0}
+.fp-uc-info{min-width:0;flex:1}
+.fp-uc-n{display:block;background:none;border:0;padding:0;font:600 13px var(--sans);color:var(--retur);cursor:pointer;text-align:left}
+.fp-uc-n:hover{text-decoration:underline}
+.fp-uc-meta{font-size:11.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:2px;align-items:center}
+.fp-rst{display:inline-block;padding:1px 6px;border-radius:10px;font:600 10.5px var(--sans);background:var(--rule-soft);color:var(--ink)}
+.fp-rst.st-ok{background:#E7F4EC;color:#146438}
+.fp-rst.st-snart{background:var(--amber-soft);color:#7A5208}
+.fp-rst.st-sen,.fp-rst.st-avv{background:#FDECEC;color:#A12626}
+.fp-rond{flex:0 0 auto;min-height:36px;padding:0 11px;border-radius:6px;border:0;background:var(--retur);color:#fff;font:600 12px var(--sans);cursor:pointer;white-space:nowrap}
+.fp-rond:hover{opacity:.92}
+.fp-links{display:flex;flex-direction:column;gap:4px}
+.fp-link{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:5px;background:#F4F7FA;color:var(--retur);text-decoration:none;font:500 12.5px var(--sans);min-height:34px}
+.fp-link:hover{background:#E8EFF6}
+.fp-link small{color:var(--muted);font-size:11px;flex:0 0 auto}
+.fp-inst{display:flex;flex-wrap:wrap;gap:5px}
+.fp-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:5px;background:var(--rule-soft);color:var(--ink);font:500 12px var(--sans)}
+.fp-chip b{font-family:var(--mono);font-size:11.5px}
+.fp-tom{font-size:12px;color:var(--muted);margin:2px 0}
 .sharebtn{display:flex;align-items:center;gap:7px}
 .sharebtn .sdot{background:#5B7186}
 .sharebtn.on .sdot{background:#5FCB8E}
@@ -1723,9 +1764,10 @@ body.locked .las-only{display:inline}
   .gsearch{order:5;flex:1 1 100%;max-width:none;margin:0}
   .topbar .brand h1{font-size:16px}
   .statuspill #mText,#lockText{display:none}
-  .statuspill{padding:0 12px;height:38px}
-  .topbar .tbtn{height:38px}
-  .topbar .lockbtn{width:38px;padding:0;justify-content:center}
+  .statuspill{padding:0 12px;height:40px}
+  .topbar .tbtn{min-height:40px;height:40px}
+  .topbar .lockbtn{width:40px;padding:0;justify-content:center}
+  .topbar .vylagebtn{padding:0 10px;font-size:12.5px}
   .gsearch input{padding-right:34px;height:38px;font-size:16px}
   .gs-key{display:none}
   .gsearch .clear{right:4px}
@@ -1783,6 +1825,7 @@ body.locked .las-only{display:inline}
       <kbd class="gs-key" title="Tryck / för att söka">/</kbd>
       <div class="gs-res" id="gsRes" role="listbox" hidden></div>
     </div>
+    <button class="tbtn vylagebtn" id="btnVyLage" type="button" aria-pressed="false" title="Växla mellan Fastighetsläge och Övervakningsläge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M9 20v-6h6v6"/></svg><span id="vyLageText">Fastighetsläge</span></button>
     <button class="statuspill" id="statusPill" type="button" title="Visa larm och kontroller"><span class="sdot" id="mDot"></span><span id="mText">Ingen kontroll gjord</span></button>
     <button class="tbtn lockbtn" id="btnLock" title="Växla mellan läsläge och redigeringsläge">
         <svg id="lockIcon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path id="lockShackle" d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
@@ -2053,6 +2096,7 @@ function portalKort(u){ try{ return new URL(u).hostname.replace(/^www\./, ''); }
 /* Anslut: leverantörens portal om den är upplagd, annars enhetens egen webbsida i nätet. */
 const lokalUrl = d => via3100(d) ? null : (isIP(d.ip) ? 'http://' + d.ip.trim() + '/' : null);
 const anslutUrl = d => portalUrl(d) || lokalUrl(d);
+const visadUrl = d => arFastLage() ? portalUrl(d) : anslutUrl(d);
 function anslutTitel(d){
   const p = portalUrl(d);
   return p ? 'Öppna ' + portalKort(p) + ' — kräver inloggning i portalen' : 'Öppna ' + String(d.ip || '').trim() + ' i en ny flik';
@@ -2307,7 +2351,24 @@ function loadV1(){
 let state;
 /* Inställningar som hör till den här datorn och inte ska skrivas över när
    data läses från en delad fil eller en import. */
-const LOKALA = ['anvandare', 'senasteBackup', 'rondNamn', 'rondEgna', 'panelW', 'basemap', 'locked', 'details', 'kartvy', 'kartlager', 'omrVy', 'omrEtikett', 'timeout', 'parallel', 'retry', 'schedule', 'fwHidden', 'nkPos', 'nkDolda', 'nkTyper', 'nkBaraFel', 'nkGruppera'];
+const LOKALA = ['anvandare', 'senasteBackup', 'rondNamn', 'rondEgna', 'panelW', 'basemap', 'locked', 'details', 'kartvy', 'kartlager', 'omrVy', 'omrEtikett', 'vyLage', 'timeout', 'parallel', 'retry', 'schedule', 'fwHidden', 'nkPos', 'nkDolda', 'nkTyper', 'nkBaraFel', 'nkGruppera'];
+
+/* Vy-läge: 'fastighet' (standard) visar fastighetsinfo, driftinstruktioner och rondering utan interna nätlarm eller lokala IP-länkar.
+   'overvakning' visar nätverksstatus, larm och lokala IP-anslutningar (för kontorsdator).
+   Framtida utveckling: detta läge ska styras automatiskt på användarnivå/roll (t.ex. via Entra ID). */
+const arFastLage = () => !state || state.vyLage !== 'overvakning';
+function applyVyLage(){
+  const fast = arFastLage();
+  document.body.classList.toggle('fastlage', fast);
+  const btn = $('#btnVyLage'), txt = $('#vyLageText');
+  if(btn){
+    btn.setAttribute('aria-pressed', String(!fast));
+    btn.title = fast
+      ? 'Fastighetsläge (standard) — visar undercentraler, driftinstruktioner och rondering utan interna nätlarm. Klicka för Övervakningsläge.'
+      : 'Övervakningsläge — visar nätverksstatus, larm och lokala IP-adresser. Klicka för Fastighetsläge.';
+  }
+  if(txt) txt.textContent = fast ? 'Fastighetsläge' : 'Övervakning';
+}
 
 function emptyState(){ return rondInit({schema:SCHEMA_VERSION, areas:[], locked:true}); }
 function behallLokala(fran, till){ LOKALA.forEach(k => { if(fran && fran[k] !== undefined) till[k] = fran[k]; }); return till; }
@@ -2564,7 +2625,7 @@ function areaStatus(a){
 function mpIkon(d, big){
   const t = TYPER[d.typ] || TYPER.ovrigt;
   const r = ROLLER[d.roll] || ROLLER.fastighet;
-  const c = huvudbox(d) ? 'ejkontroll' : comStatus(d);
+  const c = (arFastLage() || huvudbox(d)) ? 'ejkontroll' : comStatus(d);
   const viaCme = d.typ !== 'cme' && d.master;
   const titel = t.label + (r.plupp ? ' · ' + r.label : '') + (viaCme ? ' · läses via Elvaco' : '');
   return '<span class="mpi' + (big ? ' big' : '') + (c === 'ingen' ? ' larm' : c === 'paverkad' ? ' pav' : '') +
@@ -2651,8 +2712,8 @@ function setBasemap(id, manual){
 }
 
 function areaTitel(a){
-  const utan = a.devices.filter(d => { const c = comStatus(d); return c === 'ingen' || c === 'paverkad'; }).length;
-  const luckor = a.devices.filter(d => docStatus(d) === 'lucka').length;
+  const utan = arFastLage() ? 0 : a.devices.filter(d => { const c = comStatus(d); return c === 'ingen' || c === 'paverkad'; }).length;
+  const luckor = arFastLage() ? 0 : a.devices.filter(d => docStatus(d) === 'lucka').length;
   return [a.name, a.devices.length + (a.devices.length === 1 ? ' enhet' : ' enheter'), a.ucs.length ? a.ucs.length + (a.ucs.length === 1 ? ' undercentral' : ' undercentraler') : null,
     utan ? utan + ' utan kontakt' : null, luckor ? luckor + ' saknar uppgift' : null].filter(Boolean).join(' · ');
 }
@@ -2717,6 +2778,13 @@ function renderMap(){
       draggable:editable, title:adr.namn + ' (' + n + ' objekt)', zIndexOffset:650});
     m.on('dragend', ev => { const p = ev.target.getLatLng(); const r = adrRec(a, adr.namn); r.lat = p.lat; r.lng = p.lng; r.auto = false; persist(); renderMap(); });
     m.on('click', () => {
+      if(arFastLage()){
+        const p = L.popup({maxWidth:360, minWidth:270, className:'adrpop', offset:[0, -12]})
+          .setLatLng(m.getLatLng()).setContent(fastighetsPopup(a, adr.namn)).openOn(map);
+        kopplaFastPopup(p.getElement(), a, adr.namn);
+        if(!isTouch()) visaAdrIListan(a, adr.namn);
+        return;
+      }
       const p = L.popup({maxWidth:360, minWidth:270, className:'adrpop', offset:[0, -12]})
         .setLatLng(m.getLatLng()).setContent(adrPopup(a, adressAv(a, adr.namn) || adr)).openOn(map);
       kopplaAdrPopup(p.getElement(), a, adr.namn, m);
@@ -2742,7 +2810,73 @@ function renderMap(){
   });
 }
 
+function fastighetsPopup(a, adrNamn){
+  const obj = adrNamn ? objektVid(a, adrNamn) : {ucs:a.ucs || [], devs:a.devices || []};
+  const ucs = obj.ucs, devs = obj.devs;
+  const rubrik = adrNamn ? esc(adrNamn) : nrBadge(a) + esc(a.name);
+  const sub = adrNamn ? esc(a.name) : esc([omrNr(a) ? 'Område ' + omrNr(a) : '', a.address && a.address !== a.name ? a.address : ''].filter(Boolean).join(' · ') || 'Fastighetsöversikt');
+  let h = '<div class="devpop"><h3>' + rubrik + '</h3><div class="popmeta">' + sub + '</div>';
+
+  /* 1. Undercentraler med rondstatus och direktknapp "Rondera nu" */
+  h += '<div class="fp-sec"><div class="fp-h">Undercentraler (' + ucs.length + ')</div>';
+  if(ucs.length){
+    h += ucs.map(u => {
+      const rs = ucRondSt(u), avv = oppnaAvvik(u.id).length;
+      const stCls = avv ? 'st-avv' : rs.st === 'sen' ? 'st-sen' : rs.st === 'snart' ? 'st-snart' : rs.st === 'ok' ? 'st-ok' : '';
+      const stTxt = avv ? (avv === 1 ? '1 avvikelse' : avv + ' avvikelser') : rs.txt;
+      const meta = [u.fabrikat, u.effekt ? u.effekt + ' kW' : '', u.placering].filter(Boolean).join(' · ');
+      return '<div class="fp-uc"><div class="fp-uc-info"><button type="button" class="fp-uc-n" data-adruc="' + u.id + '">' + esc(u.name || 'Undercentral') + '</button>' +
+        '<div class="fp-uc-meta"><span class="fp-rst ' + stCls + '">' + esc(stTxt) + '</span>' + (meta ? '<span>' + esc(meta) + '</span>' : '') + '</div></div>' +
+        '<button type="button" class="fp-rond" data-fprond="' + u.id + '">Rondera nu</button></div>';
+    }).join('');
+  } else h += '<p class="fp-tom">Ingen undercentral registrerad.</p>';
+  h += '</div>';
+
+  /* 2. Driftinstruktioner och dokumentlänkar (exklusive interna IP-adresser) */
+  const lankar = [];
+  ucs.forEach(u => (u.links || []).forEach(l => { if(l && l.url) lankar.push({url:l.url, label:l.label || 'Driftinstruktion', kalla:u.name || 'UC'}); }));
+  devs.forEach(d => {
+    const pUrl = portalUrl(d);
+    if(pUrl) lankar.push({url:pUrl, label:portalKort(pUrl) + ' (portal)', kalla:d.name});
+    (d.links || []).forEach(l => { if(l && l.url) lankar.push({url:l.url, label:l.label || 'Dokument', kalla:d.name}); });
+  });
+  h += '<div class="fp-sec"><div class="fp-h">Driftinstruktioner &amp; dokument</div>';
+  if(lankar.length){
+    h += '<div class="fp-links">' + lankar.map(l =>
+      '<a class="fp-link" href="' + esc(l.url) + '" target="_blank" rel="noopener"><span>' + esc(l.label) + ' ↗</span><small>' + esc(l.kalla) + '</small></a>'
+    ).join('') + '</div>';
+  } else h += '<p class="fp-tom">Inga driftinstruktioner eller dokumentlänkar inlagda än.</p>';
+  h += '</div>';
+
+  /* 3. Sammanfattning av tekniska installationer utan "Anslut"-knapp till interna IP */
+  const typAntal = {};
+  devs.forEach(d => { typAntal[d.typ] = (typAntal[d.typ] || 0) + 1; });
+  const karlAntal = ucs.reduce((s, u) => s + (u.karl || []).length, 0);
+  const chips = TYP_ORDNING.filter(k => typAntal[k]).map(k =>
+    '<span class="fp-chip">' + miniIkon(k, 13) + esc(TYPER[k].label) + ' <b>' + typAntal[k] + '</b></span>'
+  );
+  if(karlAntal) chips.push('<span class="fp-chip">' + esc('Tryckkärl') + ' <b>' + karlAntal + '</b></span>');
+  h += '<div class="fp-sec"><div class="fp-h">Tekniska installationer</div>' +
+    (chips.length ? '<div class="fp-inst">' + chips.join('') + '</div>' : '<p class="fp-tom">Inga installationer registrerade.</p>') + '</div>';
+
+  if(adrNamn) h += '<button type="button" class="poplink" data-fpvisa="1">Visa i registret</button>';
+  else if(areaFilter !== a.id) h += '<button type="button" class="poplink" data-popact="area" data-a="' + a.id + '">Visa området</button>';
+  return h + '</div>';
+}
+function kopplaFastPopup(el, a, adrNamn){
+  if(!el) return;
+  el.querySelectorAll('[data-fprond]').forEach(b => b.addEventListener('click', () => { map.closePopup(); rondOppna(b.dataset.fprond); }));
+  el.querySelectorAll('[data-adruc]').forEach(b => b.addEventListener('click', () => { map.closePopup(); jumpToUc(a.id, b.dataset.adruc, true); }));
+  el.querySelectorAll('[data-fpvisa]').forEach(b => b.addEventListener('click', () => { map.closePopup(); visaAdrIListan(a, adrNamn); }));
+}
+
 function onAreaMarker(a, m){
+  if(arFastLage()){
+    const p = L.popup({maxWidth:360, minWidth:260, className:'adrpop', offset:[0, -14]})
+      .setLatLng(m.getLatLng()).setContent(fastighetsPopup(a)).openOn(map);
+    kopplaFastPopup(p.getElement(), a);
+    return;
+  }
   if(areaFilter === a.id){ oppnaOmrPopup(a, m.getLatLng()); return; }
   if(isTouch()){ m.bindPopup(areaPopup(a), {maxWidth:320, minWidth:240}).openPopup(); return; }
   selectArea(a.id);
@@ -2750,7 +2884,7 @@ function onAreaMarker(a, m){
 
 /* Popup-innehåll (pekskärm): en stor Anslut-knapp per mätpunkt. */
 function anslutHtml(d){
-  const u = anslutUrl(d);
+  const u = visadUrl(d);
   if(u) return '<a class="popconnect" href="' + esc(u) + '" target="_blank" rel="' + anslutRel(d) + '" title="' + esc(anslutTitel(d)) + '">Anslut</a>';
   const l = (d.links || [])[0];
   if(l) return '<a class="popconnect" href="' + esc(l.url) + '" target="_blank" rel="noopener">' + esc(l.label || 'Öppna') + '</a>';
@@ -2887,15 +3021,17 @@ function renderLegend(){
     '<div class="lg-row"><i class="mpp inl" style="background:' + ROLLER[k].farg + ';display:inline-grid;place-items:center;color:#fff;font:700 8px/1 var(--sans);border-radius:50%">' + ROLLER[k].plupp + '</i>' + ROLLER[k].label + '</div>').join('');
   $('#legendBody').innerHTML =
     '<div class="lg-h">Områden</div>' +
-    '<div class="lg-row">' + sw('var(--ok)') + 'Allt i ordning</div>' +
-    '<div class="lg-row">' + sw('#C08312') + 'Uppgift saknas</div>' +
-    '<div class="lg-row">' + sw('var(--fram)') + 'Ingen kontakt</div>' +
+    (arFastLage()
+      ? '<div class="lg-row">' + sw('var(--retur)') + 'Område / Fastighet</div>'
+      : '<div class="lg-row">' + sw('var(--ok)') + 'Allt i ordning</div>' +
+        '<div class="lg-row">' + sw('#C08312') + 'Uppgift saknas</div>' +
+        '<div class="lg-row">' + sw('var(--fram)') + 'Ingen kontakt</div>') +
     '<div class="lg-h">Enheter</div>' + typer +
     '<div class="lg-row">' + ucIkon() + 'Undercentral</div>' +
     '<div class="lg-h">Roll</div>' + roller +
     '<div class="lg-row"><i class="mpc" style="position:static">' + svgIkon('cme', 9) + '</i>Läses via Elvaco</div>' +
-    '<div class="lg-row"><span class="mpi larm" style="--tc:var(--muted)">' + svgIkon('ovrigt', 11) + '</span>Röd ring = ingen kontakt, felet sitter här</div>' +
-    '<div class="lg-row"><span class="mpi pav" style="--tc:var(--muted)">' + svgIkon('ovrigt', 11) + '</span>Streckad ring = påverkad, felet sitter före</div>';
+    (arFastLage() ? '' : '<div class="lg-row"><span class="mpi larm" style="--tc:var(--muted)">' + svgIkon('ovrigt', 11) + '</span>Röd ring = ingen kontakt, felet sitter här</div>' +
+    '<div class="lg-row"><span class="mpi pav" style="--tc:var(--muted)">' + svgIkon('ovrigt', 11) + '</span>Streckad ring = påverkad, felet sitter före</div>');
 }
 
 /* ---------------------------------------------------------------------
@@ -3056,7 +3192,7 @@ function statusHtml(d){
   return '<span class="sdot s-' + dotKlass(d) + '" title="' + t + '"></span>';
 }
 function devHtml(a, d, kind, ingrp, depth, trad){
-  const u = anslutUrl(d);
+  const u = visadUrl(d);
   const bas = ingrp ? 10 : 0, ind = 16 + bas + depth * 24;
   const linjer = depth ? (trad && trad.spar || []).map((pa, i) => pa ? '<span class="spar" style="left:' + (bas + (i + 1) * 24) + 'px"></span>' : '').join('') +
     '<span class="gren' + (trad && trad.sist === false ? ' fler' : '') + '"></span>' : '';
@@ -3092,7 +3228,7 @@ function devHtml(a, d, kind, ingrp, depth, trad){
   else if(d.roll && d.roll !== 'fastighet' && ROLLER[d.roll]) add('Roll', ROLLER[d.roll].label);
   add('Fastighet', d.fastighet); add('Adress', d.adress); add('Placering', d.placering);
   if(isIP(d.ip)){
-    if(portalUrl(d) && lokalUrl(d)) dl.push('<dt>IP-adress</dt><dd class="id"><a class="dm-portal" href="' + esc(lokalUrl(d)) + '" target="_blank" rel="noopener" title="Öppna enhetens egen webbsida i nätet">' + esc(d.ip.trim()) + ' ↗</a></dd>');
+    if(!arFastLage() && portalUrl(d) && lokalUrl(d)) dl.push('<dt>IP-adress</dt><dd class="id"><a class="dm-portal" href="' + esc(lokalUrl(d)) + '" target="_blank" rel="noopener" title="Öppna enhetens egen webbsida i nätet">' + esc(d.ip.trim()) + ' ↗</a></dd>');
     else add('IP-adress', d.ip, 'id');
   }
   if(d.master) add('Läses via', mst ? mst.d.name + ' (' + d.master + ')' : d.master + ' — finns inte i registret');
@@ -3235,9 +3371,9 @@ function areaDotKlass(a){
   return {ingen:'ingen', lucka:'lucka', ok:'kontakt', tom:'ejmatt'}[areaStatus(a)] || 'ejmatt';
 }
 function areaRowHtml(a, m){
-  const p = areaProblem(a), tot = a.devices.length, vis = m.devs.length;
-  const varn = p.utan ? '<span class="aw aw-ingen">' + p.utan + ' utan kontakt</span>'
-    : p.luck ? '<span class="aw aw-lucka">' + p.luck + ' saknar uppgift</span>' : '';
+  const fast = arFastLage(), p = areaProblem(a), tot = a.devices.length, vis = m.devs.length;
+  const varn = fast ? '' : (p.utan ? '<span class="aw aw-ingen">' + p.utan + ' utan kontakt</span>'
+    : p.luck ? '<span class="aw aw-lucka">' + p.luck + ' saknar uppgift</span>' : '');
   return '<button class="area-head" type="button" data-pick="' + a.id + '">' +
     '<span class="sdot s-' + areaDotKlass(a) + '" title="' + esc(areaTitel(a)) + '"></span>' +
     '<span class="area-main"><span class="area-name">' + (omrNr(a) ? '<span class="area-nr">' + esc(omrNr(a)) + '</span>' : '') + esc(a.name) + '</span>' +
@@ -3248,14 +3384,16 @@ function areaRowHtml(a, m){
   '</button>';
 }
 function plateHtml(a){
-  const p = areaProblem(a);
+  const fast = arFastLage(), p = areaProblem(a);
   const luckTxt = p.luck === 1 ? '1 enhet saknar uppgifter' : p.luck + ' enheter saknar uppgifter';
-  const luckBtn = p.luck ? '<button type="button" class="plate-luck" data-saknas="' + a.id + '" title="Visa vilka uppgifter som saknas — fyll i eller markera som inte relevanta">' + esc(luckTxt) +
+  const luckBtn = (!fast && p.luck) ? '<button type="button" class="plate-luck" data-saknas="' + a.id + '" title="Visa vilka uppgifter som saknas — fyll i eller markera som inte relevanta">' + esc(luckTxt) +
     '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>' : '';
-  const rad = p.utan ? (p.utan === 1 ? '1 enhet svarar inte' : p.utan + ' enheter svarar inte')
-    : p.luck ? ''
-    : !a.devices.length ? 'Inga enheter registrerade'
-    : state.lastCheck ? 'Alla kontrollerade enheter svarar' : 'Inga kända fel';
+  const rad = fast
+    ? (a.ucs.length ? a.ucs.length + (a.ucs.length === 1 ? ' undercentral' : ' undercentraler') : (!a.devices.length ? 'Inga enheter registrerade' : ''))
+    : (p.utan ? (p.utan === 1 ? '1 enhet svarar inte' : p.utan + ' enheter svarar inte')
+      : p.luck ? ''
+      : !a.devices.length ? 'Inga enheter registrerade'
+      : state.lastCheck ? 'Alla kontrollerade enheter svarar' : 'Inga kända fel');
   const adr = a.address && a.address !== a.name ? a.address : '';
   /* Kompakt: nummer och adress på en rad, namnet, status + avbrott på en rad, typerna. */
   return '<div class="plate">' +
@@ -3323,6 +3461,7 @@ function renderStats(){
 }
 
 function render(){
+  applyVyLage();
   reindex();
   $('#exbar').hidden = !state.exempel;
   renderList(); renderFlags(); renderTray(); renderStats(); renderMap(); renderMonitor();
@@ -3853,6 +3992,12 @@ function askEditPassword(efter){
 $('#btnLock').addEventListener('click', () => {
   if(state.locked === false){ state.locked = true; persist(); applyLock(); render(); toast('Läsläge'); return; }
   askEditPassword();
+});
+$('#btnVyLage').addEventListener('click', () => {
+  state.vyLage = arFastLage() ? 'overvakning' : 'fastighet';
+  persist(); applyVyLage(); render(); renderLegend();
+  if(map) map.closePopup();
+  toast(arFastLage() ? 'Fastighetsläge — fokus på undercentraler, driftinstruktioner och rondering' : 'Övervakningsläge — visar nätverksstatus, larm och anslutningar');
 });
 
 /* ---------------------------------------------------------------------
@@ -5004,7 +5149,7 @@ function nextSlot(now){
   return best;
 }
 function tick(){
-  if(pinging || !canProbe || state.exempel || !state.areas.length) return;
+  if(arFastLage() || pinging || !canProbe || state.exempel || !state.areas.length) return;
   const now = new Date();
   if(slotsSince(state.lastFull ? new Date(state.lastFull) : null, now).length){ runCheck('all', true); return; }
   reindex();
@@ -5778,7 +5923,7 @@ function ucKartPopup(a, u){
   if((u.beteckningar || []).length) h += '<div class="ucp-bet">' + u.beteckningar.map(b => '<i class="bet">' + esc(b) + '</i>').join('') + '</div>';
   if(fakta.length) h += '<p class="ucp-fakta">' + esc(fakta.join(', ')) + '</p>';
   h += '<div class="adrp-l">' + (devs.length ? devs.map(d => {
-    const t = TYPER[d.typ] || TYPER.ovrigt, url = anslutUrl(d);
+    const t = TYPER[d.typ] || TYPER.ovrigt, url = visadUrl(d);
     return '<div class="adrp-rad"><button type="button" class="adrp-b" data-adrdev="' + d.id + '"><span class="adrp-r">' + mpIkon(d) +
       '<span class="adrp-t"><b>' + esc(d.name || '(namnlös)') + '</b><span>' + esc(t.label) + (d.matarnummer ? ', ' + esc(d.matarnummer) : '') + (huvudbox(d) ? ', via ' + esc(huvudbox(d).name) : '') + '</span></span>' +
       (huvudbox(d) ? '' : '<span class="sdot s-' + dotKlass(d) + '"></span>') + '</span></button>' + (url ? '<a class="adrp-a" href="' + esc(url) + '" target="_blank" rel="' + anslutRel(d) + '" title="' + esc(anslutTitel(d)) + '">Anslut</a>' : '') + '</div>';
@@ -5928,6 +6073,12 @@ function ritaLagerKarta(editable){
     m.on('dragend', ev => { const p = ev.target.getLatLng(); const rr = adrRec(g.a, g.adr.namn); rr.lat = p.lat; rr.lng = p.lng; rr.auto = false; persist(); renderMap(); });
     m.on('click', () => {
       if(g.omrade){ oppnaOmrPopup(g.a, m.getLatLng()); return; }
+      if(arFastLage()){
+        const pp = L.popup({maxWidth:360, minWidth:270, className:'adrpop', offset:[0, -10]}).setLatLng(m.getLatLng())
+          .setContent(fastighetsPopup(g.a, g.adr.namn)).openOn(map);
+        kopplaFastPopup(pp.getElement(), g.a, g.adr.namn);
+        return;
+      }
       const pp = L.popup({maxWidth:360, minWidth:270, className:'adrpop', offset:[0, -10]}).setLatLng(m.getLatLng())
         .setContent(adrPopup(g.a, adressAv(g.a, g.adr.namn) || g.adr)).openOn(map);
       kopplaAdrPopup(pp.getElement(), g.a, g.adr.namn, m);
@@ -6508,7 +6659,7 @@ function adrpUcRad(u){
     adrpRad(ucIkon(), u.name || 'Undercentral', esc(['Undercentral'].concat(u.beteckningar || [], [u.effekt ? u.effekt + ' kW' : '', u.placering]).filter(Boolean).join(', ')), '') + '</button></div>';
 }
 function adrpDevRad(a, d, adrNamn){
-  const t = TYPER[d.typ] || TYPER.ovrigt, u = anslutUrl(d);
+  const t = TYPER[d.typ] || TYPER.ovrigt, u = visadUrl(d);
   const sy = syftenAv(d).map(k => syfteAv(k).kort);
   const uRel = d.uc ? a.ucs.find(x => x.id === d.uc) : null;
   const egen = uRel && adrNyckel(effFast(a, uRel)) !== adrNyckel(adrNamn) ? ', kopplad till ' + esc(uRel.name) : '';
@@ -6964,6 +7115,7 @@ function kravLista(){
   return ut.sort((x, y) => (x.k === y.k ? 0 : x.k === 'nere' ? -1 : 1) || (x.k === 'nere' && (y.o.typ === 'switch') - (x.o.typ === 'switch')) || x.t - y.t);
 }
 function kravHtml(){
+  if(arFastLage()) return '';
   const k = kravLista(); if(!k.length) return '';
   const visa = kravAlla ? k : k.slice(0, 5), nu = Date.now();
   return '<div class="krav"><div class="krav-h"><span>Kräver åtgärd</span><b>' + k.length + '</b></div>' +
@@ -7715,7 +7867,7 @@ function nkInfo(){
     (n !== NK.rot ? '<button type="button" class="mini" data-nkdolj="' + esc(n.id) + '" title="Göm den' + (n.antal ? ' och de ' + n.antal + ' under den' : '') + ' i nätkartan. Ändrar inget i registret.">Dölj</button>' : '') +
     (nkPosTab()[n.id] ? '<button type="button" class="mini" data-nkaterplats="' + esc(n.id) + '">Tillbaka till sin plats</button>' : '') +
     (n.virt ? '' : kollKnapp(n.d, n.a) + '<button type="button" class="mini" data-jump="' + n.d.id + '" data-jumparea="' + n.a.id + '">Visa i registret</button>' +
-      (anslutUrl(n.d) ? '<a class="mini" href="' + esc(anslutUrl(n.d)) + '" target="_blank" rel="' + anslutRel(n.d) + '">' + (portalUrl(n.d) ? 'Portal' : 'Öppna') + PIL_UT + '</a>' : '')) +
+      (visadUrl(n.d) ? '<a class="mini" href="' + esc(visadUrl(n.d)) + '" target="_blank" rel="' + anslutRel(n.d) + '">' + (portalUrl(n.d) ? 'Portal' : 'Öppna') + PIL_UT + '</a>' : '')) +
     '</div>';
   box.innerHTML = h;
 }
@@ -8146,7 +8298,7 @@ function rdUcSida(x){
     .slice().sort((p, q) => (p.uc === u.id ? 0 : 1) - (q.uc === u.id ? 0 : 1) || TYP_ORDNING.indexOf(p.typ) - TYP_ORDNING.indexOf(q.typ) || cmpSv(p.name, q.name));
   if(enh.length){
     h += '<section class="rd-sek"><h3>Installationer och enheter (' + enh.length + ')</h3>' + enh.map(d => {
-      const typLbl = (TYPER[d.typ] || TYPER.ovrigt).label, uUrl = anslutUrl(d);
+      const typLbl = (TYPER[d.typ] || TYPER.ovrigt).label, uUrl = visadUrl(d);
       const info = [typLbl, d.uc === u.id ? 'i UC' : effFast(a, d), d.desigo, d.matarnummer, isIP(d.ip) ? d.ip : '', d.placering].filter(Boolean).join(' · ');
       return '<div class="rd-rad liten" data-rddev="' + d.id + '" data-area="' + a.id + '" tabindex="0">' + mpIkon(d) +
         '<span class="rd-t"><b>' + esc(d.name || typLbl) + '</b><span>' + esc(info) + '</span></span>' +
@@ -8660,7 +8812,7 @@ function rondUcMark(u){ const s = ucRondSt(u).st, av = oppnaAvvik(u.id).length; 
    En central adapter skickar bara "andr" till servern och hämtar andras
    ändringar; de vävs in post för post med slaIhopData() (nyast vinner).
    ===================================================================== */
-const APP_VERSION = '3.0';
+const APP_VERSION = '3.1';
 const SAMLING = {omr:'Område', uc:'Undercentral', enh:'Enhet', rond:'Rond', mall:'Rondmall'};
 const SAMLING_FLERA = {omr:'områden', uc:'undercentraler', enh:'enheter', rond:'ronder', mall:'rondmallar'};
 const EJ_JAMFOR = {ping:1, open:1, andrad:1, andradAv:1};
