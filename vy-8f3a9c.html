@@ -2665,8 +2665,48 @@ const BASEMAPS = [
   {id:'osm',         name:'OpenStreetMap', url:'https://tile.openstreetmap.org/{z}/{x}/{y}.png', attr:'OpenStreetMap', max:19}
 ];
 
+let bmInit = false, leafletFallbackForsokt = false;
+function fyllKartlagerMeny(){
+  const bm = $('#bm'); if(!bm) return;
+  if(!bm.options.length) bm.innerHTML = BASEMAPS.map(b => '<option value="' + b.id + '">' + b.name + '</option>').join('');
+  if(!bmInit){
+    bmInit = true;
+    bm.addEventListener('change', e => { bmLocked = true; setBasemap(e.target.value, true); });
+  }
+  const start = Math.max(0, BASEMAPS.findIndex(b => b.id === state.basemap));
+  bm.value = BASEMAPS[start].id;
+}
+function laddaLeafletFallback(){
+  if(leafletFallbackForsokt || typeof L !== 'undefined') return;
+  leafletFallbackForsokt = true;
+  const kallor = [
+    {css:'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css', js:'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js'},
+    {css:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', js:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'}
+  ];
+  const prova = idx => {
+    if(typeof L !== 'undefined'){ $('#mapErr').classList.remove('on'); initMap(); renderMap(); fitAll(); return; }
+    if(idx >= kallor.length){
+      $('#mapErr p').textContent = 'Kartmotorn kunde inte hämtas från internet (cdnjs/jsDelivr/unpkg blockeras eller saknar nät). Placeringarna finns kvar oavsett.';
+      return;
+    }
+    const k = kallor[idx];
+    const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = k.css; document.head.appendChild(link);
+    const s = document.createElement('script'); s.src = k.js;
+    s.onload = () => { if(typeof L !== 'undefined'){ $('#mapErr').classList.remove('on'); initMap(); renderMap(); fitAll(); } else prova(idx + 1); };
+    s.onerror = () => prova(idx + 1);
+    document.head.appendChild(s);
+  };
+  prova(0);
+}
 function initMap(){
-  if(typeof L === 'undefined'){ $('#mapErr').classList.add('on'); return; }
+  fyllKartlagerMeny();
+  if(typeof L === 'undefined'){
+    $('#mapErr p').textContent = 'Hämtar kartmotorn från reservkälla …';
+    $('#mapErr').classList.add('on');
+    laddaLeafletFallback();
+    return;
+  }
+  if(map) return;
   /* Popuper ska inte hamna bakom verktygsfältet överst i kartan. */
   L.Popup.mergeOptions({autoPanPaddingTopLeft:[12, 76], autoPanPaddingBottomRight:[12, 12]});
   map = L.map('map', {zoomControl:true, attributionControl:true}).setView(SKOVDE, 13);
@@ -2684,28 +2724,33 @@ function initMap(){
       if(act === 'uc') jumpToUc(aid, id, true);
     }));
   });
-  $('#bm').innerHTML = BASEMAPS.map(b => '<option value="' + b.id + '">' + b.name + '</option>').join('');
-  $('#bm').addEventListener('change', e => { bmLocked = true; setBasemap(e.target.value, true); });
   let start = BASEMAPS.findIndex(b => b.id === state.basemap);
   if(start < 0) start = 0; else bmLocked = true;
   setBasemap(BASEMAPS[start].id, false);
 }
 
-function setBasemap(id, manual){
+function setBasemap(id, manual, autoSteg){
   if(!map) return;
   const i = Math.max(0, BASEMAPS.findIndex(b => b.id === id));
-  const b = BASEMAPS[i];
+  const b = BASEMAPS[i], steg = autoSteg || 0;
   if(tiles) map.removeLayer(tiles);
   $('#mapErr').classList.remove('on');
   $('#bm').value = b.id;
-  let errs = 0, loaded = false;
+  let errs = 0, loaded = false, bytt = false;
   tiles = L.tileLayer(b.url, {maxZoom:20, maxNativeZoom:b.max, subdomains:b.sub || 'abc', attribution:'&copy; ' + b.attr});
   tiles.on('tileload', () => { loaded = true; });
   tiles.on('tileerror', () => {
     errs++;
-    if(loaded) return;
-    if(errs > 4 && !bmLocked && i < BASEMAPS.length - 1){ setBasemap(BASEMAPS[i + 1].id, false); toast('Bytte till ' + BASEMAPS[i + 1].name); }
-    else if(errs > 6) $('#mapErr').classList.add('on');
+    if(loaded || bytt) return;
+    if(errs > 4 && (!bmLocked || !manual) && steg < BASEMAPS.length - 1){
+      bytt = true;
+      const nasta = BASEMAPS[(i + 1) % BASEMAPS.length];
+      setBasemap(nasta.id, false, steg + 1);
+      toast('Bytte kartlager till ' + nasta.name);
+    }else if(errs > 6){
+      $('#mapErr p').textContent = 'Inget kartlager svarar just nu. Välj ett annat lager uppe till höger — placeringarna finns kvar oavsett.';
+      $('#mapErr').classList.add('on');
+    }
   });
   tiles.addTo(map);
   if(manual){ state.basemap = b.id; persist(); }
