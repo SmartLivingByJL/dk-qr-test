@@ -133,15 +133,22 @@ body.locked .locknote{display:flex}
   transform:translate(-50%,-50%);background:var(--rule);border-radius:1px}
 .resizer:hover::after,.resizer.active::after{background:#fff}
 @media (max-width:860px){ .resizer{display:none} }
-#map{flex:1;min-height:0;background:var(--rule-soft)}
-.maperr{
-  position:absolute;inset:0;display:none;place-items:center;text-align:center;
-  padding:30px;color:var(--muted);background:
+#map{
+  flex:1;min-height:0;
+  background:
     repeating-linear-gradient(0deg,#E6EAED 0 1px,transparent 1px 40px),
     repeating-linear-gradient(90deg,#E6EAED 0 1px,transparent 1px 40px),#F3F5F6;
 }
-.maperr.on{display:grid}
-.maperr p{max-width:34ch;margin:0 auto}
+.maperr{
+  position:absolute;inset:0;display:none;align-items:flex-end;justify-content:center;
+  padding:16px 20px;pointer-events:none;z-index:500;
+}
+.maperr.on{display:flex}
+.maperr p{
+  max-width:44ch;margin:0;padding:8px 14px;border-radius:8px;
+  background:rgba(22,36,46,.88);color:#fff;font-size:12.5px;line-height:1.4;
+  box-shadow:0 4px 14px rgba(0,0,0,.18);text-align:center;
+}
 
 /* placement tray */
 .tray{
@@ -2662,7 +2669,8 @@ const BASEMAPS = [
   {id:'esri-gray',   name:'Ljus grå',   url: ESRI + 'Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', attr:'Esri', max:16},
   {id:'esri-sat',    name:'Flygfoto',   url: ESRI + 'World_Imagery/MapServer/tile/{z}/{y}/{x}',    attr:'Esri', max:19},
   {id:'carto',       name:'Carto ljus', url:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', sub:'abcd', attr:'CARTO, OpenStreetMap', max:19},
-  {id:'osm',         name:'OpenStreetMap', url:'https://tile.openstreetmap.org/{z}/{x}/{y}.png', attr:'OpenStreetMap', max:19}
+  {id:'osm',         name:'OpenStreetMap', url:'https://tile.openstreetmap.org/{z}/{x}/{y}.png', attr:'OpenStreetMap', max:19},
+  {id:'rutnat',      name:'Rutnät (utan nät)', url:'', attr:'Driftkartan', max:20, offline:true}
 ];
 
 let bmInit = false, leafletFallbackForsokt = false;
@@ -2683,8 +2691,13 @@ function laddaLeafletFallback(){
     {css:'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css', js:'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js'},
     {css:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', js:'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'}
   ];
+  const klar = () => {
+    $('#mapErr').classList.remove('on');
+    initMap(); renderMap();
+    if(areaFilter && findArea(areaFilter)) zoomToArea(findArea(areaFilter)); else fitAll();
+  };
   const prova = idx => {
-    if(typeof L !== 'undefined'){ $('#mapErr').classList.remove('on'); initMap(); renderMap(); fitAll(); return; }
+    if(typeof L !== 'undefined'){ klar(); return; }
     if(idx >= kallor.length){
       $('#mapErr p').textContent = 'Kartmotorn kunde inte hämtas från internet (cdnjs/jsDelivr/unpkg blockeras eller saknar nät). Placeringarna finns kvar oavsett.';
       return;
@@ -2692,7 +2705,7 @@ function laddaLeafletFallback(){
     const k = kallor[idx];
     const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = k.css; document.head.appendChild(link);
     const s = document.createElement('script'); s.src = k.js;
-    s.onload = () => { if(typeof L !== 'undefined'){ $('#mapErr').classList.remove('on'); initMap(); renderMap(); fitAll(); } else prova(idx + 1); };
+    s.onload = () => { if(typeof L !== 'undefined') klar(); else prova(idx + 1); };
     s.onerror = () => prova(idx + 1);
     document.head.appendChild(s);
   };
@@ -2722,6 +2735,7 @@ function initMap(){
       if(act === 'area') selectArea(aid);
       if(act === 'mp') jumpToDevice(aid, id, true);
       if(act === 'uc') jumpToUc(aid, id, true);
+      if(act === 'rond') rondOppna(id);
     }));
   });
   let start = BASEMAPS.findIndex(b => b.id === state.basemap);
@@ -2733,22 +2747,27 @@ function setBasemap(id, manual, autoSteg){
   if(!map) return;
   const i = Math.max(0, BASEMAPS.findIndex(b => b.id === id));
   const b = BASEMAPS[i], steg = autoSteg || 0;
-  if(tiles) map.removeLayer(tiles);
+  if(tiles){ map.removeLayer(tiles); tiles = null; }
   $('#mapErr').classList.remove('on');
   $('#bm').value = b.id;
+  if(b.offline){
+    if(manual){ state.basemap = b.id; persist(); }
+    return;
+  }
+  const onlineAntal = BASEMAPS.filter(x => !x.offline).length;
   let errs = 0, loaded = false, bytt = false;
   tiles = L.tileLayer(b.url, {maxZoom:20, maxNativeZoom:b.max, subdomains:b.sub || 'abc', attribution:'&copy; ' + b.attr});
-  tiles.on('tileload', () => { loaded = true; });
+  tiles.on('tileload', () => { loaded = true; $('#mapErr').classList.remove('on'); });
   tiles.on('tileerror', () => {
     errs++;
     if(loaded || bytt) return;
-    if(errs > 4 && (!bmLocked || !manual) && steg < BASEMAPS.length - 1){
+    if(errs > 4 && (!bmLocked || !manual) && steg < onlineAntal - 1){
       bytt = true;
-      const nasta = BASEMAPS[(i + 1) % BASEMAPS.length];
+      const nasta = BASEMAPS[(i + 1) % onlineAntal];
       setBasemap(nasta.id, false, steg + 1);
       toast('Bytte kartlager till ' + nasta.name);
     }else if(errs > 6){
-      $('#mapErr p').textContent = 'Inget kartlager svarar just nu. Välj ett annat lager uppe till höger — placeringarna finns kvar oavsett.';
+      $('#mapErr p').textContent = 'Inget kartlager svarar just nu — visar rutnät i bakgrunden. Du kan även välja ett annat lager uppe till höger.';
       $('#mapErr').classList.add('on');
     }
   });
@@ -5559,8 +5578,7 @@ window.addEventListener('storage', async e => {
   try{
     const data = e.key === KEY && e.newValue ? JSON.parse(e.newValue) : await Lagring.aktiv.las();
     if(!data || !Array.isArray(data.areas)) return;
-    const pw = state.panelW, bm = state.basemap;
-    state = migrate(data); state.panelW = pw; state.basemap = bm;
+    state = behallLokala(state, migrate(data));
     Lager.nollstall(); applyLock(); render();
   }catch(err){ console.error(err); }
 });
@@ -6883,7 +6901,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape' && nyPlats) st
 $('#btnMall').addEventListener('click', () => exportExcel(true).catch(() => toast('Mallen kunde inte skapas')));
 function exportData(){
   const k = JSON.parse(JSON.stringify(state));
-  ['locked', 'anvandare', 'senasteBackup', 'rondNamn', 'rondEgna', 'panelW', 'basemap', 'details', 'kartvy', 'kartlager', 'nkPos', 'nkDolda', 'nkTyper', 'nkBaraFel', 'nkGruppera'].forEach(x => delete k[x]);
+  LOKALA.forEach(x => delete k[x]);
   return k;
 }
 
